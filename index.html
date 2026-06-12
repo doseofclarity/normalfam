@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Care of the Normal Family – PHN Review</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <style>
+        .transition-all { transition: all 0.3s ease; }
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+        .group:hover .group-hover\:rotate-y-180 { transform: rotateY(180deg); }
+
+        .recall-mode .reveal-text {
+            background-color: #cbd5e1;
+            color: transparent;
+            border-radius: 0.375rem;
+            padding: 0 0.25rem;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+            box-shadow: inset 0 0 0 1px #94a3b8;
+        }
+        .recall-mode .reveal-text:hover,
+        .recall-mode .reveal-text.revealed {
+            background-color: #fde047;
+            color: #1e293b;
+            box-shadow: none;
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #0ea5e9; border-radius: 8px; }
+        .content-section { animation: fade 0.3s ease; }
+        @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .locked-section { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+        .quiz-feedback-correct { background-color: #dcfce7; border-left: 4px solid #22c55e; }
+        .quiz-feedback-wrong { background-color: #fee2e2; border-left: 4px solid #ef4444; }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: { family: { light: '#e0f2fe', DEFAULT: '#0ea5e9', dark: '#0369a1' } } } }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 h-screen flex flex-col md:flex-row font-sans text-slate-800 overflow-hidden">
+
+    <!-- Mobile Header with burger on LEFT -->
+    <div class="md:hidden bg-family-dark text-white p-4 flex justify-between items-center shadow-md z-30 shrink-0">
+        <button onclick="toggleMobileMenu()" class="text-white focus:outline-none z-40">
+            <i class="fa-solid fa-bars text-2xl"></i>
+        </button>
+        <h1 class="font-bold text-lg absolute left-1/2 transform -translate-x-1/2 pointer-events-none">
+            <i class="fa-solid fa-family mr-2 text-family-light"></i> Care of the Normal Family
+        </h1>
+        <div class="w-8"></div>
+    </div>
+
+    <nav id="sidebar" class="hidden md:flex flex-col w-full md:w-80 bg-white shadow-2xl h-full absolute md:relative z-30 transition-transform duration-300 shrink-0 border-r border-slate-200">
+        <div class="p-6 bg-gradient-to-br from-family-dark to-family text-white hidden md:block shrink-0">
+            <h1 class="font-black text-2xl tracking-wide"><i class="fa-solid fa-family text-family-light mr-2"></i> Care of the Normal Family</h1>
+            <p class="text-sm text-sky-100 mt-1 font-medium">Family Health Nursing · PHN Review</p>
+        </div>
+        <div class="flex-1 overflow-y-auto py-4">
+            <ul class="space-y-1 text-sm font-medium">
+                <li><button onclick="showSection('home')" id="btn-home" class="nav-btn w-full text-left px-6 py-3 bg-family-light text-family-dark border-r-4 border-family-dark transition-colors"><i class="fa-solid fa-house w-6 nav-icon"></i><i class="fa-solid fa-lock w-6 hidden text-slate-400"></i> Home / Start</button></li>
+                <li><button onclick="showSection('overview')" id="btn-overview" class="nav-btn w-full text-left px-6 py-3 text-slate-600 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-people-arrows w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Family in PHN Context</button></li>
+                <li><button onclick="showSection('determinants')" id="btn-determinants" class="nav-btn w-full text-left px-6 py-3 text-slate-600 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-chart-line w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Determinants of Health</button></li>
+                <li><button onclick="showSection('assessment')" id="btn-assessment" class="nav-btn w-full text-left px-6 py-3 text-slate-600 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-clipboard-list w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Family Health Assessment</button></li>
+                <li><button onclick="showSection('problems')" id="btn-problems" class="nav-btn w-full text-left px-6 py-3 text-slate-600 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-exclamation-triangle w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Health Problem Categories</button></li>
+                <li><button onclick="showSection('nursing_process')" id="btn-nursing_process" class="nav-btn w-full text-left px-6 py-3 text-slate-600 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-arrow-right-arrow-left w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Nursing Process for Family</button></li>
+                <li><button onclick="showSection('home_visit')" id="btn-home_visit" class="nav-btn w-full text-left px-6 py-3 text-slate-600 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-house-chimney w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Home Visit & Bag Technique</button></li>
+                <li><button onclick="showSection('family_programs')" id="btn-family_programs" class="nav-btn w-full text-left px-6 py-3 text-slate-600 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-child-reaching w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Family Health Programs</button></li>
+                <li><button onclick="showSection('phn_role')" id="btn-phn_role" class="nav-btn w-full text-left px-6 py-3 text-slate-600 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-user-nurse w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> PHN Role & Prevention</button></li>
+                <li><button onclick="showSection('mnemonics')" id="btn-mnemonics" class="nav-btn w-full text-left px-6 py-3 text-slate-600 hover:bg-slate-50 transition-colors border-t border-slate-200 mt-2 locked-section"><i class="fa-solid fa-brain w-6 text-family nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Mnemonic Appendix</button></li>
+                <li><button onclick="showSection('final_quiz_sec')" id="btn-final_quiz_sec" class="nav-btn w-full text-left px-6 py-3 text-slate-600 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-graduation-cap w-6 text-amber-500 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Final 50‑Item Exam</button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="flex-1 h-full overflow-y-auto bg-slate-100 relative w-full">
+        <div class="fixed top-16 md:top-4 right-4 md:right-8 z-40 flex items-center bg-white/90 backdrop-blur px-4 py-3 rounded-full shadow-lg border border-slate-200 cursor-pointer hover:bg-slate-50 transition-colors" onclick="toggleRecallMode()">
+            <span class="mr-3 text-sm font-bold text-slate-700 hidden md:inline"><i class="fa-solid fa-brain text-family mr-1"></i> Active Recall</span>
+            <span class="mr-3 text-sm font-bold text-slate-700 md:hidden"><i class="fa-solid fa-brain text-family"></i></span>
+            <button id="recall-toggle" class="w-12 h-6 bg-slate-300 rounded-full relative transition-colors duration-300 focus:outline-none shadow-inner pointer-events-none">
+                <div id="recall-knob" class="w-5 h-5 bg-white rounded-full absolute top-0.5 left-0.5 transition-transform duration-300 shadow"></div>
+            </button>
+        </div>
+
+        <div class="p-4 md:p-8 max-w-6xl mx-auto pb-32">
+
+            <!-- HOME SECTION -->
+            <section id="home" class="content-section flex flex-col items-center justify-center min-h-[80vh] text-center block">
+                <div class="bg-gradient-to-br from-slate-800 to-family-dark text-white rounded-3xl shadow-2xl p-10 md:p-16 w-full relative overflow-hidden">
+                    <div class="absolute top-0 right-0 -mt-10 -mr-10 text-white opacity-5 pointer-events-none"><i class="fa-solid fa-family text-[20rem]"></i></div>
+                    <div class="relative z-10">
+                        <div class="bg-white/10 backdrop-blur-sm inline-block p-4 rounded-full text-family-light mb-6 shadow-sm border border-white/20">
+                            <i class="fa-solid fa-hand-holding-heart text-5xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-sky-200 mb-2 uppercase tracking-widest">Family Health Nursing</h3>
+                        <h1 class="text-4xl md:text-6xl font-black text-white mb-6 leading-tight drop-shadow-md">Care of the Normal Family</h1>
+                        <div class="bg-white/10 backdrop-blur inline-block px-6 py-3 rounded-full mb-10 border border-white/20">
+                            <p class="text-lg text-white font-medium">"The family is the basic unit of the community – healthy families build healthy nations."</p>
+                        </div>
+                        <button onclick="unlockFirstSection()" class="bg-sky-600 hover:bg-sky-500 text-white font-black py-4 px-10 rounded-full shadow-xl transition-transform hover:scale-105 text-lg flex items-center mx-auto focus:outline-none">
+                            Begin Lecture <i class="fa-solid fa-arrow-right ml-3"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 1: Family in PHN Context -->
+            <section id="overview" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-6 border-b-2 border-family pb-3"><i class="fa-solid fa-people-arrows text-family mr-4"></i> The Family in Public Health Nursing</h2>
+                    <div class="bg-sky-50 border-l-4 border-family p-4 mb-6 rounded-r shadow-sm">
+                        <p><strong class="text-family-dark">Definition:</strong> The family is the <span class="reveal-text font-bold">basic unit of the community</span>. All members are empowered to maintain their health status, free from disease or infirmity. In public health, the health of the family is considered as a <span class="reveal-text">whole and not individually</span> (Page 128).</p>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                            <h3 class="font-bold text-lg mb-3"><i class="fa-solid fa-heartbeat text-family mr-2"></i> Why Focus on the Family?</h3>
+                            <ul class="list-disc pl-5 space-y-2 text-sm">
+                                <li>Health beliefs, practices, and habits are learned and reinforced within the family.</li>
+                                <li>Family members share environment, genetics, and socioeconomic conditions.</li>
+                                <li>Health interventions targeted at the family have multiplier effects.</li>
+                                <li>The DOH uses a <span class="reveal-text">life span approach</span> – health care for specific age groups within the family context.</li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                            <h3 class="font-bold text-lg mb-3"><i class="fa-solid fa-target text-family mr-2"></i> Family Health Office Goals</h3>
+                            <ul class="list-disc pl-5 space-y-1 text-sm">
+                                <li>Improve survival, health & well‑being of mothers and unborn (pre‑pregnancy to postnatal).</li>
+                                <li>Reduce morbidity/mortality for children 0‑9 years.</li>
+                                <li>Reduce preventable mortality among adolescents and young people.</li>
+                                <li>Reduce morbidity/mortality of Filipino adults and older persons.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <button onclick="openQuiz('overview')" class="mt-8 w-full bg-slate-800 text-white font-black py-4 rounded-xl shadow-md hover:bg-slate-900 transition-colors flex items-center justify-center text-lg"><i class="fa-solid fa-list-check mr-3 text-2xl text-family"></i> Take Quiz to Unlock Next Section</button>
+                </div>
+            </section>
+
+            <!-- SECTION 2: Determinants of Health -->
+            <section id="determinants" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-6 border-b-2 border-family pb-3"><i class="fa-solid fa-chart-line text-family mr-4"></i> Determinants of Health (Page 14)</h2>
+                    <div class="bg-yellow-50 p-5 rounded-xl border border-yellow-200 mb-6">
+                        <p class="font-bold text-center text-lg">Mnemonic: <span class="reveal-text font-black text-slate-800">I Eat Pure Spicy Chicken</span></p>
+                        <ul class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-3">
+                            <li><strong>I</strong> – Income and social status</li>
+                            <li><strong>E</strong> – Education</li>
+                            <li><strong>P</strong> – Physical environment</li>
+                            <li><strong>S</strong> – Social support networks</li>
+                            <li><strong>C</strong> – Culture</li>
+                            <li><strong>Ch</strong> – Employment/working conditions</li>
+                        </ul>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                            <h3 class="font-bold text-lg mb-3">Other Determinants</h3>
+                            <ul class="list-disc pl-5 space-y-1 text-sm">
+                                <li>Genetics – inheritance affects lifespan and disease susceptibility.</li>
+                                <li>Personal behavior & coping skills – diet, smoking, physical activity, stress management.</li>
+                                <li>Health services – access and use of preventive and curative services.</li>
+                                <li>Gender – men and women suffer different diseases at different ages.</li>
+                            </ul>
+                        </div>
+                        <div class="bg-family-light p-5 rounded-xl border border-family">
+                            <h3 class="font-bold text-lg">Optimum Level of Functioning (OLOF)</h3>
+                            <p class="text-sm">The framework refers to OLOF of individuals, families, and communities being influenced by several factors in the eco‑system. The PHN aims to improve family functioning through targeted interventions.</p>
+                        </div>
+                    </div>
+                    <button onclick="openQuiz('determinants')" class="mt-8 w-full bg-slate-800 text-white font-black py-4 rounded-xl shadow-md hover:bg-slate-900 transition-colors flex items-center justify-center text-lg"><i class="fa-solid fa-list-check mr-3 text-2xl text-family"></i> Take Quiz to Unlock Next Section</button>
+                </div>
+            </section>
+
+            <!-- SECTION 3: Family Health Assessment -->
+            <section id="assessment" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-6 border-b-2 border-family pb-3"><i class="fa-solid fa-clipboard-list text-family mr-4"></i> Family Health Assessment</h2>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                            <h3 class="font-bold text-lg mb-3">Data Collection Areas (Page 54)</h3>
+                            <ul class="list-disc pl-5 space-y-1 text-sm">
+                                <li><strong>Individual:</strong> signs/symptoms, medical/nursing history, KAP, coping skills, lifestyle, help‑seeking behavior.</li>
+                                <li><strong>Family:</strong> structure & characteristics, socioeconomic & cultural factors, environment, health assessment of each member, value placed on prevention, competencies on family health care.</li>
+                                <li><strong>Community:</strong> population characteristics, physical environment, health/illness data, resources, leadership, culture, participation in health programs.</li>
+                            </ul>
+                        </div>
+                        <div class="bg-blue-50 p-5 rounded-xl border border-blue-200">
+                            <h3 class="font-bold text-lg mb-3">Data Collection Methods</h3>
+                            <ul class="list-disc pl-5 space-y-1 text-sm">
+                                <li>Community surveys</li>
+                                <li>Interview of individuals, families, groups</li>
+                                <li>Observation of health‑related behaviors</li>
+                                <li>Review of records and statistics</li>
+                                <li>Physical examination and screening tests</li>
+                                <li>Community participation in data gathering</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="mt-6 bg-amber-50 p-4 rounded-xl border border-amber-200">
+                        <p class="font-bold"><i class="fa-solid fa-lightbulb"></i> Key Principle:</p>
+                        <p class="text-sm">Assessment is done <span class="reveal-text">with active participation of the clients</span>. Data are treated confidentially.</p>
+                    </div>
+                    <button onclick="openQuiz('assessment')" class="mt-8 w-full bg-slate-800 text-white font-black py-4 rounded-xl shadow-md hover:bg-slate-900 transition-colors flex items-center justify-center text-lg"><i class="fa-solid fa-list-check mr-3 text-2xl text-family"></i> Take Quiz to Unlock Next Section</button>
+                </div>
+            </section>
+
+            <!-- SECTION 4: Categories of Health Problems -->
+            <section id="problems" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-6 border-b-2 border-family pb-3"><i class="fa-solid fa-exclamation-triangle text-family mr-4"></i> Categories of Health Problems (Page 54)</h2>
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div class="bg-red-50 p-5 rounded-xl border border-red-200">
+                            <div class="text-3xl text-red-600 mb-2"><i class="fa-solid fa-circle-exclamation"></i></div>
+                            <h3 class="font-bold text-lg text-red-800 mb-2">Health Deficit</h3>
+                            <p class="text-sm">Gap between actual and achievable health status. Example: history of repeated infections, no regular health check‑up, presence of illness or disability.</p>
+                        </div>
+                        <div class="bg-orange-50 p-5 rounded-xl border border-orange-200">
+                            <div class="text-3xl text-orange-600 mb-2"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                            <h3 class="font-bold text-lg text-orange-800 mb-2">Health Threat</h3>
+                            <p class="text-sm">Conditions that promote disease or injury and prevent people from realizing their health potential. Example: inadequate immunization, poor environmental sanitation, exposure to hazards.</p>
+                        </div>
+                        <div class="bg-purple-50 p-5 rounded-xl border border-purple-200">
+                            <div class="text-3xl text-purple-600 mb-2"><i class="fa-solid fa-clock"></i></div>
+                            <h3 class="font-bold text-lg text-purple-800 mb-2">Foreseeable Crisis</h3>
+                            <p class="text-sm">Stressful occurrences that may precipitate illness or injury. Example: death of a family member, loss of job, natural disaster, or any anticipated stressful life event.</p>
+                        </div>
+                    </div>
+                    <p class="mt-4 text-center text-slate-600 italic">A <strong>health need</strong> exists when a health problem can be alleviated with medical or social technology, combined with actual/potential resources and commitment to act.</p>
+                    <button onclick="openQuiz('problems')" class="mt-8 w-full bg-slate-800 text-white font-black py-4 rounded-xl shadow-md hover:bg-slate-900 transition-colors flex items-center justify-center text-lg"><i class="fa-solid fa-list-check mr-3 text-2xl text-family"></i> Take Quiz to Unlock Next Section</button>
+                </div>
+            </section>
+
+            <!-- SECTION 5: Nursing Process for Family -->
+            <section id="nursing_process" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-6 border-b-2 border-family pb-3"><i class="fa-solid fa-arrow-right-arrow-left text-family mr-4"></i> Nursing Process for Family</h2>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                            <h3 class="font-bold text-lg mb-3">Steps (Fig. 3, Page 53)</h3>
+                            <ul class="list-decimal pl-5 space-y-2 text-sm">
+                                <li><strong>Assessment</strong> – systematic collection of data.</li>
+                                <li><strong>Diagnosis</strong> – identification of actual/potential health problems (deficits, threats, crises).</li>
+                                <li><strong>Planning</strong> – goal setting (SMART: specific, measurable, attainable, realistic, time‑bound).</li>
+                                <li><strong>Implementation</strong> – nursing interventions, coordination, teaching, referrals.</li>
+                                <li><strong>Evaluation</strong> – of structure, process, and outcomes.</li>
+                            </ul>
+                        </div>
+                        <div class="bg-family-light p-5 rounded-xl border border-family">
+                            <h3 class="font-bold text-lg mb-3">Planning Considerations</h3>
+                            <ul class="list-disc pl-5 space-y-1 text-sm">
+                                <li>Prioritize problems (nature, magnitude, modifiability, preventive potential, salience).</li>
+                                <li>Set objectives with client participation.</li>
+                                <li>Consider three levels of prevention.</li>
+                                <li>Identify resources (family, community, health system).</li>
+                                <li>Develop evaluation criteria.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="mt-6 bg-green-50 p-4 rounded-xl border border-green-200">
+                        <p class="font-bold"><i class="fa-solid fa-check-circle"></i> Evaluation Frameworks (Page 57):</p>
+                        <ul class="list-disc pl-5 text-sm">
+                            <li><strong>Structure:</strong> physical settings, equipment, staffing, budget.</li>
+                            <li><strong>Process:</strong> nursing actions, steps of nursing process.</li>
+                            <li><strong>Outcome:</strong> changes in client's health status, knowledge, attitude, behavior, satisfaction.</li>
+                        </ul>
+                    </div>
+                    <button onclick="openQuiz('nursing_process')" class="mt-8 w-full bg-slate-800 text-white font-black py-4 rounded-xl shadow-md hover:bg-slate-900 transition-colors flex items-center justify-center text-lg"><i class="fa-solid fa-list-check mr-3 text-2xl text-family"></i> Take Quiz to Unlock Next Section</button>
+                </div>
+            </section>
+
+            <!-- SECTION 6: Home Visit & Bag Technique -->
+            <section id="home_visit" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-6 border-b-2 border-family pb-3"><i class="fa-solid fa-house-chimney text-family mr-4"></i> Home Visit & Bag Technique</h2>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                            <h3 class="font-bold text-lg mb-3">Purposes of Home Visit (Page 61)</h3>
+                            <ul class="list-disc pl-5 space-y-1 text-sm">
+                                <li>Give nursing care to sick, postpartum mother & newborn – teach responsible family member.</li>
+                                <li>Assess living conditions and health practices.</li>
+                                <li>Give health teachings on prevention and control of diseases.</li>
+                                <li>Establish close relationship between health agency and public.</li>
+                                <li>Promote use of community services and inter‑referral system.</li>
+                            </ul>
+                        </div>
+                        <div class="bg-blue-50 p-5 rounded-xl border border-blue-200">
+                            <h3 class="font-bold text-lg mb-3">Bag Technique Principles (Page 63)</h3>
+                            <ul class="list-disc pl-5 space-y-1 text-sm">
+                                <li>Minimizes spread of infection.</li>
+                                <li>Saves time and effort.</li>
+                                <li>Shows effectiveness of total care.</li>
+                                <li>Bag is placed on a table lined with clean paper (clean side out).</li>
+                                <li>Handwashing before and after procedure.</li>
+                                <li>Arrange bag contents for efficiency.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="mt-4 bg-amber-50 p-3 rounded-lg border border-amber-200 text-sm">
+                        <p><strong>Essential contents (Page 62):</strong> Thermometers, scissors, forceps, disposable syringes, sterile dressings, cotton balls, cord clamp, plaster, tape measure, sterile gloves, baby scale, alcohol lamp, test tubes, solutions (Betadine, 70% alcohol, Zephiran, hydrogen peroxide, spirit of ammonia, ophthalmic ointment, acetic acid, Benedict's solution). Sphygmomanometer and stethoscope carried separately.</p>
+                    </div>
+                    <button onclick="openQuiz('home_visit')" class="mt-8 w-full bg-slate-800 text-white font-black py-4 rounded-xl shadow-md hover:bg-slate-900 transition-colors flex items-center justify-center text-lg"><i class="fa-solid fa-list-check mr-3 text-2xl text-family"></i> Take Quiz to Unlock Next Section</button>
+                </div>
+            </section>
+
+            <!-- SECTION 7: Family Health Programs (Brief) -->
+            <section id="family_programs" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-6 border-b-2 border-family pb-3"><i class="fa-solid fa-child-reaching text-family mr-4"></i> Family Health Programs (Chapter V)</h2>
+                    <div class="grid md:grid-cols-2 gap-4 text-sm">
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                            <i class="fa-solid fa-baby-carriage text-family text-2xl mb-2 block"></i>
+                            <h3 class="font-bold">Maternal Health Program</h3>
+                            <ul class="list-disc pl-5">
+                                <li>Antenatal registration (≥4 visits)</li>
+                                <li>Tetanus toxoid immunization</li>
+                                <li>Micronutrient supplementation (iron, folic acid, vitamin A)</li>
+                                <li>BEMOC strategy</li>
+                                <li>Postpartum care</li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                            <i class="fa-solid fa-child text-family text-2xl mb-2 block"></i>
+                            <h3 class="font-bold">Child Health Programs</h3>
+                            <ul class="list-disc pl-5">
+                                <li>Exclusive breastfeeding & complementary feeding</li>
+                                <li>Newborn screening</li>
+                                <li>Expanded Program on Immunization (EPI)</li>
+                                <li>Integrated Management of Childhood Illness (IMCI)</li>
+                                <li>Micronutrient supplementation (Vitamin A, iron)</li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                            <i class="fa-solid fa-people-arrows text-family text-2xl mb-2 block"></i>
+                            <h3 class="font-bold">Family Planning Program</h3>
+                            <ul class="list-disc pl-5">
+                                <li>Permanent methods (BTL, vasectomy)</li>
+                                <li>Long‑acting (IUD, implant)</li>
+                                <li>Short‑acting (pills, injectables, condoms)</li>
+                                <li>Natural methods (LAM, BBT, Standard Days, Two‑Day)</li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                            <i class="fa-solid fa-apple-alt text-family text-2xl mb-2 block"></i>
+                            <h3 class="font-bold">Nutrition Program</h3>
+                            <ul class="list-disc pl-5">
+                                <li>Micronutrient supplementation (Vit A, iron, iodine)</li>
+                                <li>Food fortification (RA 8976)</li>
+                                <li>Garantisadong Pambata / Child Health Week</li>
+                                <li>Home, school & community food production</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="mt-4 bg-slate-100 p-3 rounded-lg text-center text-sm">
+                        <p><strong>Also:</strong> Adolescent Health, Adult Men/Women Health, Older Person Program, Reproductive Health Framework (10 elements).</p>
+                    </div>
+                    <button onclick="openQuiz('family_programs')" class="mt-8 w-full bg-slate-800 text-white font-black py-4 rounded-xl shadow-md hover:bg-slate-900 transition-colors flex items-center justify-center text-lg"><i class="fa-solid fa-list-check mr-3 text-2xl text-family"></i> Take Quiz to Unlock Next Section</button>
+                </div>
+            </section>
+
+            <!-- SECTION 8: PHN Role & Levels of Prevention -->
+            <section id="phn_role" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-6 border-b-2 border-family pb-3"><i class="fa-solid fa-user-nurse text-family mr-4"></i> PHN Role in Normal Family Care</h2>
+                    <div class="grid md:grid-cols-3 gap-4 mb-6">
+                        <div class="bg-green-50 p-4 rounded-lg border border-green-200 text-center">
+                            <div class="text-3xl text-green-600 mb-2"><i class="fa-solid fa-leaf"></i></div>
+                            <h3 class="font-bold">Primary Prevention</h3>
+                            <p class="text-xs">Health promotion & specific protection: health education, immunization, family planning, nutrition promotion, environmental sanitation.</p>
+                        </div>
+                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-200 text-center">
+                            <div class="text-3xl text-blue-600 mb-2"><i class="fa-solid fa-stethoscope"></i></div>
+                            <h3 class="font-bold">Secondary Prevention</h3>
+                            <p class="text-xs">Early diagnosis & prompt treatment: screening (BP, diabetes, cancer), case finding, prenatal check‑ups, well‑child clinics.</p>
+                        </div>
+                        <div class="bg-purple-50 p-4 rounded-lg border border-purple-200 text-center">
+                            <div class="text-3xl text-purple-600 mb-2"><i class="fa-solid fa-hand-holding-heart"></i></div>
+                            <h3 class="font-bold">Tertiary Prevention</h3>
+                            <p class="text-xs">Rehabilitation & disability limitation: home care for chronic illness, support groups, physical therapy, counseling.</p>
+                        </div>
+                    </div>
+                    <ul class="list-disc pl-5 space-y-2 text-slate-700">
+                        <li><strong>Health educator:</strong> Teach family on nutrition, hygiene, immunization, family planning, breastfeeding, child care.</li>
+                        <li><strong>Care provider:</strong> Nursing interventions during home visits, clinic visits, school visits.</li>
+                        <li><strong>Manager/Coordinator:</strong> Organize family health programs, supervise midwives/BHWs, manage referrals.</li>
+                        <li><strong>Advocate:</strong> Empower family to access health services and adopt healthy behaviors.</li>
+                        <li><strong>Researcher:</strong> Participate in community diagnosis and health surveillance.</li>
+                        <li><strong>Role model:</strong> Demonstrate healthy lifestyle practices.</li>
+                    </ul>
+                    <button onclick="openQuiz('phn_role')" class="mt-8 w-full bg-slate-800 text-white font-black py-4 rounded-xl shadow-md hover:bg-slate-900 transition-colors flex items-center justify-center text-lg"><i class="fa-solid fa-list-check mr-3 text-2xl text-family"></i> Take Quiz to Unlock Next Section</button>
+                </div>
+            </section>
+
+            <!-- SECTION 9: Mnemonic Appendix -->
+            <section id="mnemonics" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-6 border-b-2 border-family pb-3"><i class="fa-solid fa-brain text-family mr-4"></i> Mnemonic Appendix</h2>
+                    <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm">
+                        <table class="w-full text-left text-sm md:text-base">
+                            <thead class="bg-slate-800 text-white"><tr><th class="p-3">Topic</th><th class="p-3">Mnemonic</th><th class="p-3">Meaning</th></tr></thead>
+                            <tbody class="divide-y bg-white">
+                                <tr><td class="p-3 font-semibold">Determinants of health (social)<table><td class="font-black text-family">I Eat Pure Spicy Chicken</span></td>
+                                    <td class="reveal-text">Income, Education, Physical environment, Social support, Culture, Employment/working conditions</td>
+                                </tr>
+                                <tr class="bg-slate-50">
+                                    <td class="p-3 font-semibold">Health problem categories</td>
+                                    <td class="font-black text-family">D.T.F.</td>
+                                    <td class="reveal-text">Deficit, Threat, Foreseeable crisis</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-semibold">Nursing process steps</td>
+                                    <td class="font-black text-family">A.D.P.I.E.</td>
+                                    <td class="reveal-text">Assessment, Diagnosis, Planning, Implementation, Evaluation</td>
+                                </tr>
+                                <tr class="bg-slate-50">
+                                    <td class="p-3 font-semibold">Smart objectives</td>
+                                    <td class="font-black text-family">S.M.A.R.T.</td>
+                                    <td class="reveal-text">Specific, Measurable, Attainable, Realistic, Time‑bound</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-semibold">Levels of prevention (Leavell)</td>
+                                    <td class="font-black text-family">P.S.T. (Primary, Secondary, Tertiary)</td>
+                                    <td class="reveal-text">Primary (health promotion/protection), Secondary (early Dx/treatment), Tertiary (rehab)</td>
+                                 </tr>
+                                <tr class="bg-slate-50">
+                                    <td class="p-3 font-semibold">Family health programs</td>
+                                    <td class="font-black text-family">M.C.A.N.O.</td>
+                                    <td class="reveal-text">Maternal, Child, Adolescent, Nutrition, Older person</td>
+                                 </tr>
+                                <tr>
+                                    <td class="p-3 font-semibold">Essential newborn package</td>
+                                    <td class="font-black text-family">N.B. E.P.I.C.</td>
+                                    <td class="reveal-text">Newborn screening, Breastfeeding, Eye prophylaxis, Immunization, Cord care, Vitamin K</td>
+                                 </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <button onclick="openQuiz('final_quiz')" class="mt-8 w-full bg-amber-500 text-slate-900 font-black py-4 rounded-xl shadow-md hover:bg-amber-400 transition-colors text-lg"><i class="fa-solid fa-graduation-cap mr-3"></i> Take Final 50‑Item Exam</button>
+                </div>
+            </section>
+
+            <!-- FINAL QUIZ SECTION -->
+            <section id="final_quiz_sec" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8 text-center min-h-[60vh] flex flex-col justify-center items-center">
+                    <i class="fa-solid fa-graduation-cap text-8xl text-amber-400 mb-6"></i>
+                    <h2 class="text-4xl font-black text-slate-800 mb-4">Final Comprehensive Exam</h2>
+                    <p class="text-lg text-slate-600 mb-8 max-w-2xl">You have completed all modules. Test your mastery of Care of the Normal Family – 50 items, need 75% to pass.</p>
+                    <button onclick="openQuiz('final_quiz')" class="w-full max-w-md bg-slate-800 text-white font-black py-4 rounded-xl shadow-md hover:bg-slate-900 transition-colors text-xl">Start Final Exam</button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div id="quiz-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4">
+        <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl p-6 md:p-8 relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeQuiz()" class="absolute top-4 right-4 text-slate-400 hover:text-red-500"><i class="fa-solid fa-xmark text-2xl"></i></button>
+            <h2 id="quiz-title" class="text-3xl font-black text-slate-800 mb-2"></h2>
+            <p class="text-slate-600 mb-6 font-medium border-b border-slate-200 pb-4">Score at least <span class="font-bold text-family">75%</span> to unlock next section.</p>
+            <div id="quiz-questions-container" class="space-y-4"></div>
+            <button id="quiz-submit-btn" onclick="submitQuiz()" class="mt-8 w-full bg-family text-white font-bold py-4 rounded-xl hover:bg-family-dark transition-colors shadow-lg text-lg">Submit Answers</button>
+            <div id="quiz-result-container" class="hidden mt-6 p-4 rounded-xl bg-slate-100 border border-slate-200"></div>
+        </div>
+    </div>
+
+    <script>
+        let unlockedSections = ['home'];
+        const quizzes = {
+            overview: { title: 'Family in PHN Context', next: 'determinants', questions: [
+                { q: "In public health, the family is considered as:", options: ["A group of sick individuals", "The basic unit of the community", "A source of infection only", "Not relevant to health"], ans: 1 },
+                { q: "The DOH uses which approach to design programs for different age groups?", options: ["Disease approach", "Life span approach", "Hospital‑based approach", "Curative only"], ans: 1 },
+                { q: "Which of the following is a goal of the Family Health Office?", options: ["Increase maternal mortality", "Reduce morbidity/mortality of children 0-9 years", "Discourage breastfeeding", "Limit family planning access"], ans: 1 },
+                { q: "The health of the family in public health perspective is considered:", options: ["Individually", "As a whole", "Only the mother", "Only children"], ans: 1 },
+                { q: "What is the first step in caring for a normal family?", options: ["Treating diseases", "Assessing the family's health needs", "Giving financial aid", "Hospitalization"], ans: 1 }
+            ] },
+            determinants: { title: 'Determinants of Health', next: 'assessment', questions: [
+                { q: "Which determinant refers to higher income leading to better health?", options: ["Education", "Income and social status", "Culture", "Genetics"], ans: 1 },
+                { q: "Safe water, clean air, and safe housing are part of:", options: ["Physical environment", "Social support networks", "Employment conditions", "Personal behavior"], ans: 0 },
+                { q: "The mnemonic for social determinants of health is:", options: ["CAUTION US", "I Eat Pure Spicy Chicken", "TUP SOH", "A FOR SOAP"], ans: 1 },
+                { q: "Which determinant includes customs, traditions, and beliefs?", options: ["Genetics", "Culture", "Health services", "Gender"], ans: 1 },
+                { q: "Greater support from families and friends is linked to better health. This is:", options: ["Social support networks", "Physical environment", "Income", "Education"], ans: 0 }
+            ] },
+            assessment: { title: 'Family Health Assessment', next: 'problems', questions: [
+                { q: "Which of the following is NOT a data collection method for family assessment?", options: ["Interview", "Observation", "Prescription of drugs", "Community survey"], ans: 2 },
+                { q: "Family structure, socioeconomic factors, and environment are part of assessment of:", options: ["Individual", "Family", "Community", "Genetics"], ans: 1 },
+                { q: "Data collected should be treated:", options: ["Publicly", "Confidentially", "As unimportant", "As only numerical"], ans: 1 },
+                { q: "Community participation in data gathering is:", options: ["Discouraged", "Encouraged", "Optional", "Only for research"], ans: 1 },
+                { q: "Health assessment of each member is part of which data?", options: ["Individual", "Family", "Community", "Environmental"], ans: 1 }
+            ] },
+            problems: { title: 'Health Problem Categories', next: 'nursing_process', questions: [
+                { q: "A family with a member who has tuberculosis has which type of health problem?", options: ["Health deficit", "Health threat", "Foreseeable crisis", "No problem"], ans: 0 },
+                { q: "Inadequate immunization status of children is classified as:", options: ["Health deficit", "Health threat", "Foreseeable crisis", "Normal"], ans: 1 },
+                { q: "Death of a wage earner is an example of:", options: ["Health deficit", "Health threat", "Foreseeable crisis", "Health need"], ans: 2 },
+                { q: "A gap between actual and achievable health status defines:", options: ["Health deficit", "Health threat", "Foreseeable crisis", "Health need"], ans: 0 },
+                { q: "Conditions that promote disease or injury are called:", options: ["Health deficits", "Health threats", "Foreseeable crises", "Health needs"], ans: 1 }
+            ] },
+            nursing_process: { title: 'Nursing Process for Family', next: 'home_visit', questions: [
+                { q: "What is the correct order of the nursing process?", options: ["Diagnosis, Assessment, Planning, Implementation, Evaluation", "Assessment, Diagnosis, Planning, Implementation, Evaluation", "Planning, Assessment, Diagnosis, Implementation, Evaluation", "Evaluation, Planning, Assessment, Diagnosis, Implementation"], ans: 1 },
+                { q: "SMART objectives stand for:", options: ["Simple, Measurable, Attainable, Realistic, Time-bound", "Specific, Measurable, Attainable, Realistic, Time-bound", "Specific, Manageable, Achievable, Realistic, Thorough", "Systematic, Measurable, Actual, Relevant, Total"], ans: 1 },
+                { q: "Which evaluation framework examines physical settings and equipment?", options: ["Structure", "Process", "Outcome", "All of the above"], ans: 0 },
+                { q: "The nursing process in community health is described as:", options: ["Static", "Dynamic and ongoing", "Only for hospital use", "Optional"], ans: 1 },
+                { q: "Prioritization of health problems uses criteria EXCEPT:", options: ["Nature of the problem", "Magnitude", "Color of the house", "Preventive potential"], ans: 2 }
+            ] },
+            home_visit: { title: 'Home Visit & Bag Technique', next: 'family_programs', questions: [
+                { q: "Which is a purpose of home visit?", options: ["Give nursing care and teach family members", "Collect money", "Judge the family", "Sell medicines"], ans: 0 },
+                { q: "The bag technique aims to:", options: ["Spread infection", "Minimize spread of infection and save time", "Show off equipment", "Replace handwashing"], ans: 1 },
+                { q: "Where should the PHN bag be placed during a home visit?", options: ["On the floor", "On a table lined with clean paper", "On the patient's bed", "Outside the house"], ans: 1 },
+                { q: "Which of the following is NOT a principle of bag technique?", options: ["Wash hands before and after", "Arrange bag contents efficiently", "Share bag with family", "Clean bag and contents often"], ans: 2 },
+                { q: "The bag should contain all EXCEPT:", options: ["Thermometers", "Sphygmomanometer (carried separately)", "Live virus culture", "Scissors"], ans: 2 }
+            ] },
+            family_programs: { title: 'Family Health Programs', next: 'phn_role', questions: [
+                { q: "The BEMOC strategy is part of which program?", options: ["Child Health", "Maternal Health", "Nutrition", "Family Planning"], ans: 1 },
+                { q: "Exclusive breastfeeding is recommended for the first:", options: ["1 month", "6 months", "1 year", "2 years"], ans: 1 },
+                { q: "Which law mandates food fortification?", options: ["RA 1082", "RA 8976 (Food Fortification Act)", "RA 7600", "RA 7170"], ans: 1 },
+                { q: "The EPI (Expanded Program on Immunization) aims to protect children against how many vaccine-preventable diseases?", options: ["4", "7", "10", "12"], ans: 1 },
+                { q: "LAM (Lactating Amenorrhea Method) is effective up to how many months postpartum?", options: ["3 months", "6 months", "9 months", "12 months"], ans: 1 }
+            ] },
+            phn_role: { title: 'PHN Role & Levels of Prevention', next: 'mnemonics', questions: [
+                { q: "Health education and immunization belong to which level of prevention?", options: ["Primary", "Secondary", "Tertiary", "Quaternary"], ans: 0 },
+                { q: "Screening for hypertension and diabetes is what level of prevention?", options: ["Primary", "Secondary", "Tertiary", "Primordial"], ans: 1 },
+                { q: "Rehabilitation of a stroke patient is:", options: ["Primary", "Secondary", "Tertiary", "None"], ans: 2 },
+                { q: "The PHN acts as a role model by:", options: ["Prescribing drugs", "Demonstrating healthy lifestyle", "Performing surgeries", "Diagnosing diseases"], ans: 1 },
+                { q: "Which function involves organizing family health programs and supervising midwives?", options: ["Health educator", "Manager/coordinator", "Researcher", "Advocate"], ans: 1 }
+            ] }
+        };
+
+        // Build final quiz (50 items)
+        let finalQ = [];
+        for (let sec of ['overview','determinants','assessment','problems','nursing_process','home_visit','family_programs','phn_role']) {
+            finalQ = finalQ.concat(quizzes[sec].questions.slice(0,6));
+        }
+        while(finalQ.length < 50) finalQ.push({ q: "Which of the following is a health threat?", options: ["Open wound", "Inadequate immunization", "Diabetes mellitus", "Amputation"], ans: 1 });
+        quizzes['final_quiz'] = { title: 'Final 50‑Item Exam', next: null, questions: finalQ };
+
+        function unlockFirstSection() { if(!unlockedSections.includes('overview')) { unlockedSections.push('overview'); updateSidebarUI(); } showSection('overview'); }
+        function showSection(sectionId) {
+            if (!unlockedSections.includes(sectionId) && sectionId !== 'home') { alert("Please pass the Active Recall Quiz at the bottom of the previous section to unlock this content."); return; }
+            document.querySelectorAll('.content-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById(sectionId)?.classList.remove('hidden');
+            document.querySelectorAll('.nav-btn').forEach(btn => { btn.classList.remove('bg-family-light','text-family-dark','border-r-4','border-family-dark'); btn.classList.add('text-slate-600'); });
+            const activeBtn = document.getElementById('btn-'+sectionId);
+            if(activeBtn) { activeBtn.classList.remove('text-slate-600'); activeBtn.classList.add('bg-family-light','text-family-dark','border-r-4','border-family-dark'); }
+            if(window.innerWidth < 768) document.getElementById('sidebar').classList.add('hidden');
+            document.querySelector('main').scrollTop = 0;
+        }
+        function updateSidebarUI() {
+            const sections = ['home','overview','determinants','assessment','problems','nursing_process','home_visit','family_programs','phn_role','mnemonics','final_quiz_sec'];
+            sections.forEach(sec => {
+                const btn = document.getElementById('btn-'+sec);
+                if(!btn) return;
+                const lockIcon = btn.querySelector('.fa-lock'), mainIcon = btn.querySelector('.nav-icon');
+                if(unlockedSections.includes(sec) || sec==='home') { btn.classList.remove('locked-section'); if(lockIcon) lockIcon.classList.add('hidden'); if(mainIcon) mainIcon.classList.remove('hidden'); }
+                else { btn.classList.add('locked-section'); if(lockIcon) lockIcon.classList.remove('hidden'); if(mainIcon) mainIcon.classList.add('hidden'); }
+            });
+        }
+        let currentQuiz = null;
+        function openQuiz(sectionId) {
+            currentQuiz = sectionId;
+            const qd = quizzes[sectionId];
+            if(!qd) { console.error("Quiz not found:", sectionId); return; }
+            document.getElementById('quiz-title').innerText = qd.title;
+            const container = document.getElementById('quiz-questions-container');
+            container.innerHTML = '';
+            qd.questions.forEach((q, idx) => {
+                let html = `<div class="bg-slate-50 p-4 rounded-xl border mb-4" id="quiz-q-${idx}">
+                    <p class="font-bold mb-3">${idx+1}. ${q.q}</p>
+                    <div class="space-y-2" data-qidx="${idx}">`;
+                q.options.forEach((opt, oi) => {
+                    html += `<label class="flex items-center space-x-3 p-2 rounded-lg hover:bg-white cursor-pointer">
+                        <input type="radio" name="q${idx}" value="${oi}" class="form-radio text-family">
+                        <span>${opt}</span>
+                    </label>`;
+                });
+                html += `</div><div class="feedback-${idx} text-sm mt-2 hidden"></div></div>`;
+                container.innerHTML += html;
+            });
+            document.getElementById('quiz-submit-btn').classList.remove('hidden');
+            document.getElementById('quiz-result-container').classList.add('hidden');
+            document.getElementById('quiz-modal').classList.remove('hidden');
+        }
+        function closeQuiz() { document.getElementById('quiz-modal').classList.add('hidden'); }
+        function submitQuiz() {
+            const qd = quizzes[currentQuiz];
+            if(!qd) return;
+            let score = 0;
+            for(let i=0; i<qd.questions.length; i++) {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                const isCorrect = (selected && parseInt(selected.value) === qd.questions[i].ans);
+                if(isCorrect) score++;
+                const feedbackDiv = document.querySelector(`.feedback-${i}`);
+                if(feedbackDiv) {
+                    feedbackDiv.classList.remove('hidden');
+                    const correctAnswerText = qd.questions[i].options[qd.questions[i].ans];
+                    if(isCorrect) {
+                        feedbackDiv.innerHTML = `<span class="text-green-700"><i class="fa-solid fa-check-circle mr-1"></i> Correct!</span>`;
+                        feedbackDiv.parentElement?.classList.add('quiz-feedback-correct');
+                        feedbackDiv.parentElement?.classList.remove('quiz-feedback-wrong');
+                    } else {
+                        const selectedText = selected ? qd.questions[i].options[parseInt(selected.value)] : "No answer";
+                        feedbackDiv.innerHTML = `<span class="text-red-700"><i class="fa-solid fa-times-circle mr-1"></i> Incorrect. Correct answer: <strong>${correctAnswerText}</strong>. Your answer: ${selectedText}.</span>`;
+                        feedbackDiv.parentElement?.classList.add('quiz-feedback-wrong');
+                        feedbackDiv.parentElement?.classList.remove('quiz-feedback-correct');
+                    }
+                }
+            }
+            const percent = (score/qd.questions.length)*100;
+            const resultDiv = document.getElementById('quiz-result-container');
+            const btn = document.getElementById('quiz-submit-btn');
+            btn.classList.add('hidden');
+            resultDiv.classList.remove('hidden');
+            if(percent >= 75) {
+                if(currentQuiz === 'final_quiz') {
+                    resultDiv.innerHTML = `<div class="text-amber-500 text-6xl mb-4 text-center">🏆</div><h3 class="text-2xl font-black text-center">Excellent!</h3><p class="text-center">Score ${score}/${qd.questions.length} (${percent}%)</p><p class="mt-2 text-center text-green-700">You mastered Care of the Normal Family!</p><button onclick="closeQuiz()" class="mt-4 w-full bg-slate-800 text-white py-2 rounded-lg">Close</button>`;
+                    return;
+                }
+                if(qd.next && !unlockedSections.includes(qd.next)) { unlockedSections.push(qd.next); if(qd.next === 'mnemonics') unlockedSections.push('final_quiz_sec'); updateSidebarUI(); }
+                resultDiv.innerHTML = `<div class="text-green-600 text-5xl mb-4 text-center">✓</div><h3 class="text-2xl font-black text-center">Passed!</h3><p class="text-center">Score ${score}/${qd.questions.length} (${percent}%)</p><button onclick="closeQuiz(); showSection('${qd.next}')" class="mt-4 w-full bg-green-600 text-white py-2 rounded-lg">Unlock Next Section</button>`;
+            } else {
+                resultDiv.innerHTML = `<div class="text-red-500 text-5xl mb-4 text-center">✗</div><h3 class="text-2xl font-black text-center">Failed</h3><p class="text-center">Score ${score}/${qd.questions.length} (${percent}%) – need 75%.</p><button onclick="openQuiz('${currentQuiz}')" class="mt-4 w-full bg-slate-600 text-white py-2 rounded-lg">Try Again</button>`;
+            }
+        }
+        function toggleRecallMode() {
+            const active = !document.body.classList.contains('recall-mode');
+            const toggle = document.getElementById('recall-toggle'), knob = document.getElementById('recall-knob');
+            if(active) { document.body.classList.add('recall-mode'); toggle.classList.add('bg-family-dark'); knob.classList.add('translate-x-6'); }
+            else { document.body.classList.remove('recall-mode'); toggle.classList.remove('bg-family-dark'); knob.classList.remove('translate-x-6'); }
+        }
+        function toggleMobileMenu() { const s=document.getElementById('sidebar'); if(s.classList.contains('hidden')) s.classList.remove('hidden','flex','absolute','h-full','z-50'); else s.classList.add('hidden'); }
+        document.addEventListener('DOMContentLoaded', () => { updateSidebarUI(); document.querySelectorAll('.reveal-text').forEach(el => el.addEventListener('click', function(){ if(document.body.classList.contains('recall-mode')) this.classList.toggle('revealed'); })); });
+    </script>
+</body>
+</html>
