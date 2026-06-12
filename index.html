@@ -37,6 +37,11 @@
         .locked-section { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
         .quiz-feedback-correct { background-color: #dcfce7; border-left: 4px solid #22c55e; }
         .quiz-feedback-wrong { background-color: #fee2e2; border-left: 4px solid #ef4444; }
+        /* Ensure quiz modal is above everything */
+        .quiz-modal-active {
+            display: flex;
+            z-index: 9999;
+        }
     </style>
     <script>
         tailwind.config = {
@@ -400,41 +405,15 @@
                     <h2 class="text-3xl font-black text-slate-800 mb-6 border-b-2 border-family pb-3"><i class="fa-solid fa-brain text-family mr-4"></i> Mnemonic Appendix</h2>
                     <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm">
                         <table class="w-full text-left text-sm md:text-base">
-                            <thead class="bg-slate-800 text-white"><tr><th class="p-3">Topic</th><th class="p-3">Mnemonic</th><th class="p-3">Meaning</th></tr></thead>
+                            <thead class="bg-slate-800 text-white"><tr><th class="p-3">Topic</th><th class="p-3">Mnemonic</th><th class="p-3">Meaning</th><tr></thead>
                             <tbody class="divide-y bg-white">
-                                <tr><td class="p-3 font-semibold">Determinants of health (social)<table><td class="font-black text-family">I Eat Pure Spicy Chicken</span></td>
-                                    <td class="reveal-text">Income, Education, Physical environment, Social support, Culture, Employment/working conditions</td>
-                                </tr>
-                                <tr class="bg-slate-50">
-                                    <td class="p-3 font-semibold">Health problem categories</td>
-                                    <td class="font-black text-family">D.T.F.</td>
-                                    <td class="reveal-text">Deficit, Threat, Foreseeable crisis</td>
-                                </tr>
-                                <tr>
-                                    <td class="p-3 font-semibold">Nursing process steps</td>
-                                    <td class="font-black text-family">A.D.P.I.E.</td>
-                                    <td class="reveal-text">Assessment, Diagnosis, Planning, Implementation, Evaluation</td>
-                                </tr>
-                                <tr class="bg-slate-50">
-                                    <td class="p-3 font-semibold">Smart objectives</td>
-                                    <td class="font-black text-family">S.M.A.R.T.</td>
-                                    <td class="reveal-text">Specific, Measurable, Attainable, Realistic, Time‑bound</td>
-                                </tr>
-                                <tr>
-                                    <td class="p-3 font-semibold">Levels of prevention (Leavell)</td>
-                                    <td class="font-black text-family">P.S.T. (Primary, Secondary, Tertiary)</td>
-                                    <td class="reveal-text">Primary (health promotion/protection), Secondary (early Dx/treatment), Tertiary (rehab)</td>
-                                 </tr>
-                                <tr class="bg-slate-50">
-                                    <td class="p-3 font-semibold">Family health programs</td>
-                                    <td class="font-black text-family">M.C.A.N.O.</td>
-                                    <td class="reveal-text">Maternal, Child, Adolescent, Nutrition, Older person</td>
-                                 </tr>
-                                <tr>
-                                    <td class="p-3 font-semibold">Essential newborn package</td>
-                                    <td class="font-black text-family">N.B. E.P.I.C.</td>
-                                    <td class="reveal-text">Newborn screening, Breastfeeding, Eye prophylaxis, Immunization, Cord care, Vitamin K</td>
-                                 </tr>
+                                <tr><td class="p-3 font-semibold">Determinants of health (social)</td><td class="font-black text-family">I Eat Pure Spicy Chicken</td><td class="reveal-text">Income, Education, Physical environment, Social support, Culture, Employment/working conditions</td></tr>
+                                <tr class="bg-slate-50"><td class="p-3 font-semibold">Health problem categories</td><td class="font-black text-family">D.T.F.</td><td class="reveal-text">Deficit, Threat, Foreseeable crisis</td></tr>
+                                <tr><td class="p-3 font-semibold">Nursing process steps</td><td class="font-black text-family">A.D.P.I.E.</td><td class="reveal-text">Assessment, Diagnosis, Planning, Implementation, Evaluation</td></tr>
+                                <tr class="bg-slate-50"><td class="p-3 font-semibold">Smart objectives</td><td class="font-black text-family">S.M.A.R.T.</td><td class="reveal-text">Specific, Measurable, Attainable, Realistic, Time‑bound</td></tr>
+                                <tr><td class="p-3 font-semibold">Levels of prevention (Leavell)</td><td class="font-black text-family">P.S.T.</td><td class="reveal-text">Primary (health promotion/protection), Secondary (early Dx/treatment), Tertiary (rehab)</td></tr>
+                                <tr class="bg-slate-50"><td class="p-3 font-semibold">Family health programs</td><td class="font-black text-family">M.C.A.N.O.</td><td class="reveal-text">Maternal, Child, Adolescent, Nutrition, Older person</td></tr>
+                                <tr><td class="p-3 font-semibold">Essential newborn package</td><td class="font-black text-family">N.B. E.P.I.C.</td><td class="reveal-text">Newborn screening, Breastfeeding, Eye prophylaxis, Immunization, Cord care, Vitamin K</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -454,7 +433,7 @@
         </div>
     </main>
 
-    <div id="quiz-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4">
+    <div id="quiz-modal" class="fixed inset-0 z-[9999] hidden items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4">
         <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl p-6 md:p-8 relative max-h-[90vh] overflow-y-auto">
             <button onclick="closeQuiz()" class="absolute top-4 right-4 text-slate-400 hover:text-red-500"><i class="fa-solid fa-xmark text-2xl"></i></button>
             <h2 id="quiz-title" class="text-3xl font-black text-slate-800 mb-2"></h2>
@@ -579,8 +558,11 @@
             document.getElementById('quiz-submit-btn').classList.remove('hidden');
             document.getElementById('quiz-result-container').classList.add('hidden');
             document.getElementById('quiz-modal').classList.remove('hidden');
+            document.getElementById('quiz-modal').style.display = 'flex';
         }
-        function closeQuiz() { document.getElementById('quiz-modal').classList.add('hidden'); }
+        function closeQuiz() { 
+            document.getElementById('quiz-modal').style.display = 'none';
+        }
         function submitQuiz() {
             const qd = quizzes[currentQuiz];
             if(!qd) return;
